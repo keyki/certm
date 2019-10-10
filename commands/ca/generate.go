@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/ehazlett/certm/utils"
-	"github.com/ehazlett/tlsutils"
+	"github.com/keyki/tlsutils"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func generate(c *cli.Context) {

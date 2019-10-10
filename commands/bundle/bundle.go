@@ -1,7 +1,7 @@
 package bundle
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 var CmdBundle = cli.Command{

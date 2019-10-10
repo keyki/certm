@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 var CmdServer = cli.Command{

@@ -13,8 +13,11 @@ all: build
 clean:
 	@rm -rf certm certm_*
 
-build:
-	@go build -a -tags 'netgo' -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT) -linkmode external -extldflags -static" .
+build-darwin:
+	GOOS=darwin GO111MODULE=on CGO_ENABLED=0 go build -a -tags 'netgo' -ldflags "-w -X github.com/ehazlett/certm/version.GitCommit=$(COMMIT)" -o certm main.go
+
+build-linux:
+	GOOS=linux GO111MODULE=on CGO_ENABLED=0 go build -a -tags 'netgo' -ldflags "-w -X github.com/ehazlett/certm/version.GitCommit=$(COMMIT)" -o certm main.go
 
 build-cross:
 	@gox -os=$(OS) -arch=$(ARCH) -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT) -linkmode external -extldflags -static" -output="certm_{{.OS}}_{{.Arch}}"
