@@ -1,33 +1,26 @@
-CGO_ENABLED=0
-GOOS=linux
-GOARCH=amd64
-APP=certm
-REPO=ehazlett/$(APP)
-TAG=${TAG:-latest}
-OS="darwin windows linux"
-ARCH="amd64 386"
-COMMIT=`git rev-parse --short HEAD`
+BINARY=certm
+VERSION ?= $(shell git describe --tags --abbrev=0)-snapshot
 
 all: build
 
 clean:
 	@rm -rf certm certm_*
 
+build: build-darwin build-linux
+
 build-darwin:
-	GOOS=darwin GO111MODULE=on CGO_ENABLED=0 go build -a -tags 'netgo' -ldflags "-w -X github.com/ehazlett/certm/version.GitCommit=$(COMMIT)" -o certm main.go
+	GOOS=darwin GO111MODULE=on CGO_ENABLED=0 go build -a -tags 'netgo' -ldflags "-w -X github.com/ehazlett/certm/version.Version=$(VERSION)" -o build/Darwin/${BINARY} main.go
 
 build-linux:
-	GOOS=linux GO111MODULE=on CGO_ENABLED=0 go build -a -tags 'netgo' -ldflags "-w -X github.com/ehazlett/certm/version.GitCommit=$(COMMIT)" -o certm main.go
-
-build-cross:
-	@gox -os=$(OS) -arch=$(ARCH) -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT) -linkmode external -extldflags -static" -output="certm_{{.OS}}_{{.Arch}}"
+	GOOS=linux GO111MODULE=on CGO_ENABLED=0 go build -a -tags 'netgo' -ldflags "-w -X github.com/ehazlett/certm/version.Version=$(VERSION)" -o build/Linux/${BINARY} main.go
 
 image: build
 	@echo Building image $(TAG)
 	@docker build -t $(REPO):$(TAG) .
 
-release: deps build image
-	@docker push $(REPO):$(TAG)
+release: build
+	rm -rf release
+	glu release
 
 test:
 	@bats test/integration/cli.bats test/integration/certs.bats
